@@ -3,14 +3,14 @@ package api
 import (
 	"errors"
 	"github.com/godwhoa/random-shit/botup.me/botup"
-	"github.com/godwhoa/random-shit/crypt"
+	"github.com/godwhoa/random-shit/botup.me/crypt"
 	"github.com/gorilla/sessions"
 	"net/http"
 )
 
 type User struct {
-	service *botup.UserService
-	store   *sessions.CookieStore
+	Service botup.UserService
+	Store   *sessions.CookieStore
 }
 
 var invalidForm = errors.New("Some form fields are missing")
@@ -35,11 +35,11 @@ func (u *User) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Hash password and generate UID
-	user.Pass = crypt.Hash(user.Pass)
-	user.UID = crypt.UID(user.User)
+	user.Pass, _ = crypt.Hash(user.Pass)
+	user.UID, _ = crypt.UID(user.User)
 
 	// Insert into db
-	err = u.service.CreateUser(user)
+	err = u.Service.CreateUser(user)
 	// Handle taken user/email
 	if err == botup.UserAlreadyExists {
 		w.Write([]byte("user_taken"))
@@ -61,7 +61,7 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Query db
-	user, err := u.service.GetUser(email)
+	user, err := u.Service.GetUser(email)
 	// Handle wrong email/password
 	if err == botup.UserDoesNotExist {
 		w.Write([]byte("no_exist"))
@@ -71,7 +71,7 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Set-session
-	session, _ := u.store.Get(r, "login")
+	session, _ := u.Store.Get(r, "login")
 	session.Values["uid"] = user.UID
 	session.Save(r, w)
 	w.Write([]byte("logged_in"))

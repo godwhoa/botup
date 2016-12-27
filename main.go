@@ -24,7 +24,7 @@ func main() {
 	}
 	store := sessions.NewCookieStore([]byte(CSALT))
 
-	userservice := &postgres.UserService{db}
+	userservice := postgres.UserService{db}
 	user_api := api.User{userservice, store}
 
 	r := mux.NewRouter()
