@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/godwhoa/random-shit/botup.me/botup"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 type UserService struct {
@@ -13,10 +14,12 @@ type UserService struct {
 var create_stmt = "INSERT INTO USERS (UID,EMAIL,USERNAME,PASS) VALUES($1,$2,$3,$4)"
 
 func (u UserService) CreateUser(user botup.User) error {
-	err := u.DB.QueryRow(create_stmt, user.UID, user.Email, user.User, user.Pass)
+	stmt, err := u.DB.Prepare(create_stmt)
 	if err != nil {
+		log.Println(err)
 		return botup.UserAlreadyExists
 	}
+	_, err = stmt.Exec(user.UID, user.Email, user.User, user.Pass)
 	return nil
 }
 
