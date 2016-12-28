@@ -30,6 +30,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/api/register", user_api.Register).Methods("POST")
 	r.HandleFunc("/api/login", user_api.Login).Methods("POST")
+	r.HandleFunc("/api/logout", user_api.Logout).Methods("GET")
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", r)
 

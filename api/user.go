@@ -53,6 +53,7 @@ func (u *User) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *User) Login(w http.ResponseWriter, r *http.Request) {
+	session, _ := u.Store.Get(r, "login")
 	// Form parse/validation
 	email := r.FormValue("email")
 	pass := r.FormValue("pass")
@@ -71,8 +72,18 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Set-session
-	session, _ := u.Store.Get(r, "login")
 	session.Values["uid"] = user.UID
 	session.Save(r, w)
 	w.Write([]byte("logged_in"))
+}
+
+func (u *User) Logout(w http.ResponseWriter, r *http.Request) {
+	session, err := u.Store.Get(r, "login")
+	if err != nil {
+		w.Write([]byte("no_session_set"))
+		return
+	}
+	session.Values["uid"] = nil
+	session.Save(r, w)
+	w.Write([]byte("logged_out"))
 }
