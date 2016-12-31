@@ -2,9 +2,11 @@
 <head>
 	<title>botup - login</title>
 	<link rel="stylesheet" href="css/bulma.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/login.css">
 </head>
 <body>
+<!-- Top-bar -->
 <nav class="nav">
   <div class="nav-left">
     <a class="nav-item" href="#">
@@ -22,5 +24,32 @@
     </a>
   </div>
 </nav>
+
+<!-- Forms -->
+<div class="container">
+    <div class="column is-3">
+      <p class="control has-icon">
+        <input class="input is-medium mont" type="email" placeholder="Email">
+        <i class="fa fa-envelope"></i>
+      </p>
+    </div>
+    <div class="column is-3">
+      <p class="control has-icon">
+        <input class="input is-medium mont" type="password" placeholder="Password">
+        <i class="fa fa-lock"></i>
+      </p>
+    </div>
+    <div class="column is-3">
+      <p class="control has-icon login">
+        <a class="button is-primary is-medium mont">
+          <span class="icon">
+            <i class="fa fa-sign-in"></i>
+          </span>
+          <span>Login</span>
+        </a>
+      </p>
+    </div>
+</div>
+
 </body>
 </html>
