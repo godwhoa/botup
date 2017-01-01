@@ -8,7 +8,7 @@ import (
 )
 
 func RandomBytes() []byte {
-	b := make([]byte, 2)
+	b := make([]byte, 20)
 	rand.Read(b)
 	return b
 }
