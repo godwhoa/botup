@@ -21,14 +21,14 @@ func (b BotService) AddBot(bot botup.Bot) (int, error) {
 	return bid, nil
 }
 
-var addplugin_stmt = "INSERT INTO PLUGINS (BID,PLUGIN) VALUES($1,$2)"
+var addplugin_stmt = "INSERT INTO PLUGINS (BID,UID,PLUGIN) VALUES($1,$2,$3)"
 
 func (b BotService) AddPlugin(plugin botup.Plugin) error {
 	stmt, err := b.DB.Prepare(addplugin_stmt)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(plugin.BID, plugin.Plugin)
+	_, err = stmt.Exec(plugin.BID, plugin.UID, plugin.Plugin)
 	if err != nil {
 		return botup.PluginAlreadyExists
 	}
@@ -42,22 +42,24 @@ func (b BotService) RemoveBot(bot botup.Bot) error {
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(bot.UID, bot.BID)
-	if err != nil {
+	ret, err = stmt.Exec(bot.UID, bot.BID)
+	affected, _ := ret.RowsAffected()
+	if err != nil || affected < 1 {
 		return botup.BotDoesntExists
 	}
 	return nil
 }
 
-var removeplugin_stmt = "DELETE FROM PLUGINS WHERE BID = $1 AND PLUGIN = $2"
+var removeplugin_stmt = "DELETE FROM PLUGINS WHERE BID = $1 AND UID = $2 AND PLUGIN = $3"
 
 func (b BotService) RemovePlugin(plugin botup.Plugin) error {
 	stmt, err := b.DB.Prepare(removeplugin_stmt)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(plugin.BID, plugin.Plugin)
-	if err != nil {
+	ret, err = stmt.Exec(plugin.BID, plugin.UID, plugin.Plugin)
+	affected, _ := ret.RowsAffected()
+	if err != nil || affected < 1 {
 		return botup.PluginDoesntExists
 	}
 	return nil

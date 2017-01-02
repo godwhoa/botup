@@ -12,6 +12,7 @@ type Bot struct {
 
 type Plugin struct {
 	BID    int
+	UID    string
 	Plugin string
 }
 
