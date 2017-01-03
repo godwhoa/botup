@@ -42,7 +42,7 @@ func (b BotService) RemoveBot(bot botup.Bot) error {
 	if err != nil {
 		return err
 	}
-	ret, err = stmt.Exec(bot.UID, bot.BID)
+	ret, err := stmt.Exec(bot.UID, bot.BID)
 	affected, _ := ret.RowsAffected()
 	if err != nil || affected < 1 {
 		return botup.BotDoesntExists
@@ -57,7 +57,7 @@ func (b BotService) RemovePlugin(plugin botup.Plugin) error {
 	if err != nil {
 		return err
 	}
-	ret, err = stmt.Exec(plugin.BID, plugin.UID, plugin.Plugin)
+	ret, err := stmt.Exec(plugin.BID, plugin.UID, plugin.Plugin)
 	affected, _ := ret.RowsAffected()
 	if err != nil || affected < 1 {
 		return botup.PluginDoesntExists
