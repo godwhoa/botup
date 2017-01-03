@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/godwhoa/random-shit/botup.me/api"
 	"github.com/godwhoa/random-shit/botup.me/postgres"
+	"github.com/godwhoa/random-shit/botup.me/utils/decorators"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
@@ -22,6 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal("postgres.open", err)
 	}
+
 	store := sessions.NewCookieStore([]byte(CSALT))
 	login_cache := make(map[string]string)
 
@@ -30,15 +32,24 @@ func main() {
 	bot_api := api.Bot{botservice, store}
 
 	r := mux.NewRouter()
+	// User handlers
 	r.HandleFunc("/api/user/register", user_api.Register).Methods("POST")
 	r.HandleFunc("/api/user/login", user_api.Login).Methods("POST")
 	r.HandleFunc("/api/user/logout", user_api.Logout).Methods("GET")
 
-	r.HandleFunc("/api/bot/add", bot_api.AddBot).Methods("POST")
-	r.HandleFunc("/api/bot/remove", bot_api.RemoveBot).Methods("POST")
+	// Bot handlers
+	r.HandleFunc("/api/bot/add",
+		decorators.Auth(bot_api.AddBot, store, login_cache)).Methods("POST")
+	r.HandleFunc("/api/bot/add",
+		decorators.Auth(bot_api.RemoveBot, store, login_cache)).Methods("POST")
 
-	r.HandleFunc("/api/plugin/add", bot_api.AddPlugin).Methods("POST")
-	r.HandleFunc("/api/plugin/remove", bot_api.RemovePlugin).Methods("POST")
+	// Plugin handlers
+	r.HandleFunc("/api/plugin/add",
+		decorators.Auth(bot_api.AddPlugin, store, login_cache)).Methods("POST")
+	r.HandleFunc("/api/plugin/add",
+		decorators.Auth(bot_api.RemovePlugin, store, login_cache)).Methods("POST")
+
+	// Public
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", r)
 
