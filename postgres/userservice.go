@@ -23,7 +23,7 @@ func (u UserService) CreateUser(user botup.User) error {
 	return nil
 }
 
-var get_stmt = "SELECT UID,EMAIL,USERNAME,PASS WHERE EMAIL = $1"
+var get_stmt = "SELECT UID,EMAIL,USERNAME,PASS FROM USERS WHERE EMAIL = $1"
 
 func (u UserService) GetUser(email string) (botup.User, error) {
 	user := botup.User{}
