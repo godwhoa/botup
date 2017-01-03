@@ -23,14 +23,22 @@ func main() {
 		log.Fatal("postgres.open", err)
 	}
 	store := sessions.NewCookieStore([]byte(CSALT))
+	login_cache := make(map[string]string)
 
-	userservice := postgres.UserService{db}
-	user_api := api.User{userservice, store}
+	userservice, botservice := postgres.UserService{db}, postgres.BotService{db}
+	user_api := api.User{userservice, store, login_cache}
+	bot_api := api.Bot{botservice, store}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/api/register", user_api.Register).Methods("POST")
-	r.HandleFunc("/api/login", user_api.Login).Methods("POST")
-	r.HandleFunc("/api/logout", user_api.Logout).Methods("GET")
+	r.HandleFunc("/api/user/register", user_api.Register).Methods("POST")
+	r.HandleFunc("/api/user/login", user_api.Login).Methods("POST")
+	r.HandleFunc("/api/user/logout", user_api.Logout).Methods("GET")
+
+	r.HandleFunc("/api/bot/add", bot_api.AddBot).Methods("POST")
+	r.HandleFunc("/api/bot/remove", bot_api.RemoveBot).Methods("POST")
+
+	r.HandleFunc("/api/plugin/add", bot_api.AddPlugin).Methods("POST")
+	r.HandleFunc("/api/plugin/remove", bot_api.RemovePlugin).Methods("POST")
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", r)
 
