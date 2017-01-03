@@ -1,15 +1,17 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/godwhoa/random-shit/botup.me/botup"
 	"github.com/godwhoa/random-shit/botup.me/crypt"
 	"github.com/gorilla/sessions"
-	"net/http"
 )
 
 type User struct {
-	Service botup.UserService
-	Store   *sessions.CookieStore
+	Service    botup.UserService
+	Store      *sessions.CookieStore
+	LoginCache map[string]string
 }
 
 func (u *User) Register(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +53,7 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		if crypt.Verify(user.Pass, pass) {
 			session.Values["uid"] = user.UID
+			u.LoginCache[user.UID] = "loggedin"
 			w.Write(botup.OK_LOGGED_IN)
 		} else {
 			w.Write(botup.ERR_WRONG_CREDENTIALS)
@@ -68,7 +71,10 @@ func (u *User) Logout(w http.ResponseWriter, r *http.Request) {
 		w.Write(botup.ERR_NOT_LOGGED_IN)
 		return
 	}
-	session.Values["uid"] = nil
+
+	u.LoginCache[session.Values["uid"].(string)] = "loggedout"
+	delete(session.Values, "uid")
 	session.Save(r, w)
+
 	w.Write(botup.OK_LOGGED_OUT)
 }

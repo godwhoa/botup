@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Auth(fn func(w http.ResponseWriter, r *http.Request), store *sessions.CookieStore, cache *botup.CacheService) func(w http.ResponseWriter, r *http.Request) {
+func Auth(fn func(w http.ResponseWriter, r *http.Request), store *sessions.CookieStore, cache map[string]string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := u.Store.Get(r, "login")
 		if err != nil || session.Values["uid"] == nil {
@@ -14,8 +14,8 @@ func Auth(fn func(w http.ResponseWriter, r *http.Request), store *sessions.Cooki
 			return
 		}
 
-		status, _ := cache.Get(session.Values["uid"])
-		if status == "loggedin" {
+		status, ok := cache[session.Values["uid"]]
+		if ok && status == "loggedin" {
 			fn(w, r)
 		} else {
 			w.Write(botup.ERR_NOT_LOGGED_IN)
