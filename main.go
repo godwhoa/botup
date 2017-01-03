@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
-	"log"
+	"github.com/uber-go/zap"
 	"net/http"
 )
 
@@ -19,16 +19,28 @@ const (
 )
 
 func main() {
+	// Init logger
+	log := zap.New(
+		zap.NewJSONEncoder(
+			zap.RFC3339Formatter("@timestamp"),
+			zap.MessageKey("@message"),
+			zap.LevelString("@level"),
+		),
+	)
+
+	// Init postgres connection
 	db, err := sql.Open("postgres", DB_ADDR)
 	if err != nil {
-		log.Fatal("postgres.open", err)
+		log.Fatal("postgres.open", zap.Error(err))
 	}
 
+	// Init cookie and cache stores
 	store := sessions.NewCookieStore([]byte(CSALT))
 	login_cache := make(map[string]string)
 
+	// Init APIs
 	userservice, botservice := postgres.UserService{db}, postgres.BotService{db}
-	user_api := api.User{userservice, store, login_cache}
+	user_api := api.User{userservice, store, login_cache, log}
 	bot_api := api.Bot{botservice, store}
 
 	r := mux.NewRouter()
@@ -53,6 +65,6 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	http.Handle("/", r)
 
-	log.Printf("Listening on %s\n", SRV_ADDR)
-	log.Fatal("ListenAndServe: ", http.ListenAndServe(SRV_ADDR, nil))
+	log.Info("http.ListenAndServe", zap.String("addr", SRV_ADDR))
+	log.Fatal("http.ListenAndServe: ", zap.Error(http.ListenAndServe(SRV_ADDR, nil)))
 }
