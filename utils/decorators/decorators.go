@@ -6,8 +6,7 @@ import (
 	"net/http"
 )
 
-func Auth(fn func(w http.ResponseWriter, r *http.Request),
-	store *sessions.CookieStore, cache map[string]string) func(w http.ResponseWriter, r *http.Request) {
+func Auth(fn http.HandlerFunc, store *sessions.CookieStore, cache map[string]string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := store.Get(r, "login")
 		uid, ok := session.Values["uid"]
@@ -22,5 +21,6 @@ func Auth(fn func(w http.ResponseWriter, r *http.Request),
 		} else {
 			w.Write(botup.ERR_NOT_LOGGED_IN)
 		}
+		session.Save(r, w)
 	}
 }
