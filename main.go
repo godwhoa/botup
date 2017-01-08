@@ -41,7 +41,7 @@ func main() {
 	// Init APIs
 	userservice, botservice := postgres.UserService{db}, postgres.BotService{db}
 	user_api := api.User{userservice, store, login_cache, log}
-	bot_api := api.Bot{botservice, store}
+	bot_api := api.Bot{botservice, store, log}
 
 	r := mux.NewRouter()
 	// User handlers
