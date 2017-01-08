@@ -30,6 +30,7 @@ func validate_addbot_form(r *http.Request, w http.ResponseWriter, store *session
 	}
 
 	bot := botup.Bot{}
+	bot.Alive = true
 	bot.UID = session.Values["uid"].(string)
 	bot.Addr = addr
 	bot.Channel = channel
