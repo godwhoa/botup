@@ -16,7 +16,7 @@ type User struct {
 }
 
 func (u *User) Register(w http.ResponseWriter, r *http.Request) {
-	user, err := validate_reg_form(r)
+	user, err := validate_reg_form(r, w)
 	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		u.Log.Error("api.user.register",
@@ -35,7 +35,8 @@ func (u *User) Register(w http.ResponseWriter, r *http.Request) {
 	switch err {
 	case botup.UserAlreadyExists:
 		w.Write(botup.ERR_USER_TAKEN)
-		u.Log.Info("api.user.register",
+		u.Log.Error("api.user.register",
+			zap.Error(err),
 			zap.String("info", "user taken"),
 			zap.String("user", user.User),
 			zap.String("email", user.Email),
@@ -89,8 +90,11 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		if crypt.Verify(user.Pass, pass) {
 			session.Values["uid"] = user.UID
+			session.Save(r, w)
+
 			u.LoginCache[user.UID] = "loggedin"
 			w.Write(botup.OK_LOGGED_IN)
+
 			u.Log.Info("api.user.login",
 				zap.String("info", "user logged in"),
 				zap.String("email", user.Email),
@@ -122,7 +126,7 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 
 func (u *User) Logout(w http.ResponseWriter, r *http.Request) {
 	session, err := u.Store.Get(r, "login")
-	uid, ok := session.Values["uid"].(string)
+	uid, ok := session.Values["uid"]
 	if err != nil || !ok {
 		w.Write(botup.ERR_NOT_LOGGED_IN)
 		u.Log.Error("api.user.logout",
@@ -132,14 +136,14 @@ func (u *User) Logout(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
-	u.LoginCache[uid] = "loggedout"
+	u.LoginCache[uid.(string)] = "loggedout"
 	delete(session.Values, "uid")
 	session.Save(r, w)
 
 	w.Write(botup.OK_LOGGED_OUT)
 	u.Log.Info("api.user.logout",
 		zap.String("info", "user logged out"),
-		zap.String("uid", uid),
+		zap.String("uid", uid.(string)),
 		zap.String("ip", r.RemoteAddr),
 	)
 }
