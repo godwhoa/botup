@@ -9,7 +9,7 @@ import (
 )
 
 // User form validation
-func validate_reg_form(r *http.Request) (botup.User, error) {
+func validate_reg_form(r *http.Request, w http.ResponseWriter) (botup.User, error) {
 	email := r.FormValue("email")
 	user := r.FormValue("user")
 	pass := r.FormValue("pass")
@@ -20,7 +20,7 @@ func validate_reg_form(r *http.Request) (botup.User, error) {
 }
 
 // Bot form validation
-func validate_addbot_form(r *http.Request, store *sessions.CookieStore) (botup.Bot, error) {
+func validate_addbot_form(r *http.Request, w http.ResponseWriter, store *sessions.CookieStore) (botup.Bot, error) {
 	session, _ := store.Get(r, "login")
 
 	addr := r.FormValue("addr")
@@ -34,10 +34,12 @@ func validate_addbot_form(r *http.Request, store *sessions.CookieStore) (botup.B
 	bot.Addr = addr
 	bot.Channel = channel
 
+	session.Save(r, w)
+
 	return bot, nil
 }
 
-func validate_addplugin_form(r *http.Request, store *sessions.CookieStore) (botup.Plugin, error) {
+func validate_addplugin_form(r *http.Request, w http.ResponseWriter, store *sessions.CookieStore) (botup.Plugin, error) {
 	session, _ := store.Get(r, "login")
 
 	plugin := botup.Plugin{}
@@ -53,10 +55,12 @@ func validate_addplugin_form(r *http.Request, store *sessions.CookieStore) (botu
 	plugin.UID = session.Values["uid"].(string)
 	plugin.Plugin = plugin_
 
+	session.Save(r, w)
+
 	return plugin, nil
 }
 
-func validate_removebot_form(r *http.Request, store *sessions.CookieStore) (botup.Bot, error) {
+func validate_removebot_form(r *http.Request, w http.ResponseWriter, store *sessions.CookieStore) (botup.Bot, error) {
 	session, _ := store.Get(r, "login")
 
 	bid, err := strconv.Atoi(r.FormValue("bid"))
@@ -68,10 +72,12 @@ func validate_removebot_form(r *http.Request, store *sessions.CookieStore) (botu
 	bot.UID = session.Values["uid"].(string)
 	bot.BID = bid
 
+	session.Save(r, w)
+
 	return bot, nil
 }
 
-func validate_removeplugin_form(r *http.Request, store *sessions.CookieStore) (botup.Plugin, error) {
+func validate_removeplugin_form(r *http.Request, w http.ResponseWriter, store *sessions.CookieStore) (botup.Plugin, error) {
 	session, _ := store.Get(r, "login")
 
 	bid, err := strconv.Atoi(r.FormValue("bid"))
@@ -79,6 +85,8 @@ func validate_removeplugin_form(r *http.Request, store *sessions.CookieStore) (b
 	if plugin == "" || err != nil {
 		return botup.Plugin{}, invalidForm
 	}
+
+	session.Save(r, w)
 
 	return botup.Plugin{bid, session.Values["uid"].(string), plugin}, nil
 }
