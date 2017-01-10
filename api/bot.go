@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/godwhoa/random-shit/botup.me/api/validate"
 	"github.com/godwhoa/random-shit/botup.me/botup"
 	"github.com/gorilla/sessions"
 	"github.com/uber-go/zap"
@@ -15,7 +16,7 @@ type Bot struct {
 }
 
 func (b *Bot) AddBot(w http.ResponseWriter, r *http.Request) {
-	bot, err := validate_addbot_form(r, w, b.Store)
+	bot, err := validate.AddBot(r, b.Store)
 	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		b.Log.Error("api.bot.addbot",
@@ -54,7 +55,7 @@ func (b *Bot) AddBot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b *Bot) AddPlugin(w http.ResponseWriter, r *http.Request) {
-	plugin, err := validate_addplugin_form(r, w, b.Store)
+	plugin, err := validate.AddPlugin(r, b.Store)
 	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		b.Log.Error("api.bot.addplugin",
@@ -94,7 +95,7 @@ func (b *Bot) AddPlugin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b *Bot) RemoveBot(w http.ResponseWriter, r *http.Request) {
-	bot, err := validate_removebot_form(r, w, b.Store)
+	bot, err := validate.RemoveBot(r, b.Store)
 	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		b.Log.Error("api.bot.removebot",
@@ -133,7 +134,7 @@ func (b *Bot) RemoveBot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (b *Bot) RemovePlugin(w http.ResponseWriter, r *http.Request) {
-	plugin, err := validate_removeplugin_form(r, w, b.Store)
+	plugin, err := validate.RemovePlugin(r, b.Store)
 	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		b.Log.Error("api.bot.removeplugin",

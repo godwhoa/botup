@@ -1,11 +1,13 @@
 package api
 
 import (
+	"net/http"
+
+	"github.com/godwhoa/random-shit/botup.me/api/validate"
 	"github.com/godwhoa/random-shit/botup.me/botup"
 	"github.com/godwhoa/random-shit/botup.me/crypt"
 	"github.com/gorilla/sessions"
 	"github.com/uber-go/zap"
-	"net/http"
 )
 
 type User struct {
@@ -16,7 +18,7 @@ type User struct {
 }
 
 func (u *User) Register(w http.ResponseWriter, r *http.Request) {
-	user, err := validate_reg_form(r, w)
+	user, err := validate.Registration(r)
 	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		u.Log.Error("api.user.register",
@@ -65,30 +67,30 @@ func (u *User) Register(w http.ResponseWriter, r *http.Request) {
 func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 	session, _ := u.Store.Get(r, "login")
 
-	email, pass := r.FormValue("email"), r.FormValue("pass")
-	if email == "" || pass == "" {
+	form, err := validate.Login(r)
+	if err != nil {
 		w.Write(botup.ERR_FIELDS_MISSING)
 		u.Log.Error("api.user.login",
-			zap.Error(invalidForm),
+			zap.Error(validate.ValidationErr),
 			zap.String("info", "login form fields missing"),
 			zap.String("ip", r.RemoteAddr),
 		)
 		return
 	}
 
-	user, err := u.Service.GetUser(email)
+	user, err := u.Service.GetUser(form.Email)
 	switch err {
 	case botup.UserDoesNotExist:
 		w.Write(botup.ERR_WRONG_CREDENTIALS)
 		u.Log.Info("api.user.login",
 			zap.Error(err),
 			zap.String("info", "wrong credentials"),
-			zap.String("email", email),
-			zap.String("pass", pass),
+			zap.String("email", form.Email),
+			zap.String("pass", form.Pass),
 			zap.String("ip", r.RemoteAddr),
 		)
 	case nil:
-		if crypt.Verify(user.Pass, pass) {
+		if crypt.Verify(user.Pass, form.Pass) {
 			session.Values["uid"] = user.UID
 			session.Save(r, w)
 
@@ -106,8 +108,8 @@ func (u *User) Login(w http.ResponseWriter, r *http.Request) {
 			w.Write(botup.ERR_WRONG_CREDENTIALS)
 			u.Log.Error("api.user.login",
 				zap.String("info", "wrong credentials at nil"),
-				zap.String("email", email),
-				zap.String("pass", pass),
+				zap.String("email", form.Email),
+				zap.String("pass", form.Pass),
 				zap.String("ip", r.RemoteAddr),
 			)
 		}
