@@ -7,7 +7,7 @@ function SendForm() {
 			case "OK_LOGGED_IN":
 				$('#ok-login').css('display','block');
 				setTimeout(function(){
-					window.location.pathname = "/dashboard"
+					// window.location.pathname = "/dashboard"
 				},1000)
 			case "ERR_WRONG_CREDENTIALS":
 				$('#wrong-cred').css('display','block');
