@@ -29,19 +29,19 @@
 <div class="container">
     <div class="column is-3">
       <p class="control has-icon">
-        <input class="input is-medium mont" type="email" placeholder="Email">
+        <input class="input is-medium mont" id="email" type="email" placeholder="Email">
         <i class="fa fa-envelope"></i>
       </p>
     </div>
     <div class="column is-3">
       <p class="control has-icon">
-        <input class="input is-medium mont" type="password" placeholder="Password">
+        <input class="input is-medium mont" id="password" type="password" placeholder="Password">
         <i class="fa fa-lock"></i>
       </p>
     </div>
     <div class="column is-3">
       <p class="control has-icon login">
-        <a class="button is-primary is-medium mont">
+        <a class="button is-primary is-medium mont" id="login">
           <span class="icon">
             <i class="fa fa-sign-in"></i>
           </span>
@@ -49,7 +49,24 @@
         </a>
       </p>
     </div>
-</div>
+    <div class="column is-3" id="ok-login">
+        <div class="notification is-danger">
+          Ok, logged in 
+        </div>
+    </div>
+    <div class="column is-3" id="wrong-cred">
+        <div class="notification is-danger">
+          Wrong credentials 
+        </div>
+    </div>
+    <div class="column is-3" id="inter-err">
+        <div class="notification is-danger">
+          Something went wrong 
+        </div>
+    </div>
 
+</div>
+<script src="js/zepto.min.js" ></script>
+<script src="js/login.js" ></script>
 </body>
 </html>
