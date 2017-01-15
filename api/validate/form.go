@@ -2,11 +2,11 @@ package validate
 
 import (
 	"errors"
-	"net/http"
-	"strconv"
-
+	"fmt"
 	"github.com/godwhoa/random-shit/botup.me/botup"
 	"github.com/gorilla/sessions"
+	"net/http"
+	"strconv"
 )
 
 const (
@@ -21,30 +21,25 @@ var ValidationErr = errors.New("Form field failed one or more rules")
 
 func Validate(r *http.Request, formRules map[string]Rules) (map[string]interface{}, error) {
 	parsed := make(map[string]interface{})
-	pass := false
-formLoop:
+
 	for field, rules := range formRules {
 		value := r.FormValue(field)
+		fmt.Println(value == "")
 		for _, rule := range rules {
 			switch rule {
 			case NoEmpty, IsString:
 				if value == "" {
-					break formLoop
+					return parsed, ValidationErr
 				}
 				parsed[field] = value
-				pass = true
 			case IsInt:
 				i, err := strconv.Atoi(value)
 				if err != nil {
-					break formLoop
+					return parsed, ValidationErr
 				}
 				parsed[field] = i
-				pass = true
 			}
 		}
-	}
-	if !pass {
-		return parsed, ValidationErr
 	}
 	return parsed, nil
 }
