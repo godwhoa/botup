@@ -17,9 +17,11 @@ func (u UserService) CreateUser(user botup.User) error {
 	stmt, err := u.DB.Prepare(create_stmt)
 	if err != nil {
 		log.Println(err)
-		return botup.UserAlreadyExists
 	}
 	_, err = stmt.Exec(user.UID, user.Email, user.User, user.Pass)
+	if err != nil {
+		return botup.UserAlreadyExists
+	}
 	return nil
 }
 

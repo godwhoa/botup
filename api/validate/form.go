@@ -24,7 +24,6 @@ func Validate(r *http.Request, formRules map[string]Rules) (map[string]interface
 
 	for field, rules := range formRules {
 		value := r.FormValue(field)
-		fmt.Println(value == "")
 		for _, rule := range rules {
 			switch rule {
 			case NoEmpty, IsString:
