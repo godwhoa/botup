@@ -2,7 +2,7 @@ package validate
 
 import (
 	"errors"
-	"fmt"
+
 	"github.com/godwhoa/random-shit/botup.me/botup"
 	"github.com/gorilla/sessions"
 	"net/http"
@@ -24,6 +24,7 @@ func Validate(r *http.Request, formRules map[string]Rules) (map[string]interface
 
 	for field, rules := range formRules {
 		value := r.FormValue(field)
+
 		for _, rule := range rules {
 			switch rule {
 			case NoEmpty, IsString:

@@ -62,7 +62,7 @@ func main() {
 		decorators.Auth(bot_api.RemovePlugin, store, login_cache)).Methods("POST")
 
 	// Public
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./client/")))
 	http.Handle("/", r)
 
 	log.Info("http.ListenAndServe", zap.String("addr", SRV_ADDR))
