@@ -30,6 +30,7 @@
 
 <script>
 import Responses from './Responses.vue'
+import dom from '../utils/dom.js'
 
 export default {
   name: 'login',
@@ -54,28 +55,25 @@ export default {
         console.log(response)
         switch (response.body){
           case "OK_LOGGED_IN":
-            document.getElementById("ok-login").style.display = 'block'
+            dom.show("#ok-login")
             setTimeout(()=>{
               this.$router.push("dashboard")
             },1000)
             break;
           case "ERR_WRONG_CREDENTIALS":
-            document.getElementById("wrong-cred").style.display = 'block'
+            dom.show("#wrong-cred")
             break;
           case "ERR_FIELDS_MISSING":
-            document.getElementById("invalid-form").style.display = 'block'
+            dom.show("#invalid-form")
             break;
           case "ERR_INTERNAL":
-            document.getElementById("inter-err").style.display = 'block'
+            dom.show("#inter-err")
             break;
           default:
-            document.getElementById("inter-err").style.display = 'block'
+            dom.show("#inter-err")
         }
         setTimeout(()=>{
-          let notifications = document.getElementsByClassName("notification")
-          for (let i = 0; i < notifications.length; i++) {
-              notifications[i].style.display = 'none'
-          }
+          dom.hide(".notification")
         },2000)
       },err => {console.log(err)});
     }
