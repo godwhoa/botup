@@ -14,7 +14,7 @@ import (
 
 const (
 	SRV_ADDR = ":8080"
-	DB_ADDR  = "postgres://postgres:bingbong@localhost/botup?sslmode=disable"
+	DB_ADDR  = "user=postgres dbname=botup password=bingbong sslmode=disable"
 	CSALT    = "$2a$06$Ke2pAMZuWgu2tloy5RkjCu0rwbDjYFwkR2wx8AzzNtPMY1BWsVfB6"
 )
 

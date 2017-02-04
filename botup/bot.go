@@ -5,6 +5,7 @@ import "errors"
 type Bot struct {
 	BID     int
 	UID     string
+	Nick    string
 	Addr    string
 	Channel string
 	Alive   bool

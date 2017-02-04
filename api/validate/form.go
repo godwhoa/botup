@@ -56,6 +56,7 @@ var (
 		"pass":  {IsString, NoEmpty},
 	}
 	AddBotRules = map[string]Rules{
+		"nick":    {IsString, NoEmpty},
 		"addr":    {IsString, NoEmpty},
 		"channel": {IsString, NoEmpty},
 	}
@@ -107,6 +108,7 @@ func AddBot(r *http.Request, store *sessions.CookieStore) (botup.Bot, error) {
 	return botup.Bot{
 		UID:     session.Values["uid"].(string),
 		Addr:    form["addr"].(string),
+		Nick:    form["nick"].(string),
 		Channel: form["channel"].(string),
 		Alive:   true,
 	}, nil

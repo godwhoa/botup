@@ -40,6 +40,7 @@ func (b *Bot) AddBot(w http.ResponseWriter, r *http.Request) {
 		b.Log.Info("api.bot.addbot",
 			zap.String("info", "bot added"),
 			zap.String("uid", bot.UID),
+			zap.String("uid", bot.Nick),
 			zap.String("addr", bot.Addr),
 			zap.String("channel", bot.Channel),
 			zap.String("ip", r.RemoteAddr),
@@ -132,6 +133,10 @@ func (b *Bot) RemoveBot(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 }
+
+// TODO
+func (b *Bot) GetBot(w http.ResponseWriter, r *http.Request)    {}
+func (b *Bot) GetPlugin(w http.ResponseWriter, r *http.Request) {}
 
 func (b *Bot) RemovePlugin(w http.ResponseWriter, r *http.Request) {
 	plugin, err := validate.RemovePlugin(r, b.Store)

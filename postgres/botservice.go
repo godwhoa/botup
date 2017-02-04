@@ -10,11 +10,11 @@ type BotService struct {
 	DB *sql.DB
 }
 
-var addbot_stmt = "INSERT INTO BOTS (UID,ALIVE,SERVER,CHANNEL) VALUES($1,$2,$3,$4) RETURNING BID"
+var addbot_stmt = "INSERT INTO BOTS (UID,ALIVE,NICK,SERVER,CHANNEL) VALUES($1,$2,$3,$4,$5) RETURNING BID"
 
 func (b BotService) AddBot(bot botup.Bot) (int, error) {
 	var bid int
-	err := b.DB.QueryRow(addbot_stmt, bot.UID, bot.Alive, bot.Addr, bot.Channel).Scan(&bid)
+	err := b.DB.QueryRow(addbot_stmt, bot.UID, bot.Alive, bot.Nick, bot.Addr, bot.Channel).Scan(&bid)
 	if err != nil {
 		return bid, botup.BotAlreadyExists
 	}
