@@ -50,9 +50,8 @@ export default {
     doLogin(){
       const email = document.getElementById("email").value
       const password = document.getElementById("password").value
-      console.log(email,password)
+
       this.$http.post('/api/user/login', {'email': email,'pass':password}).then(response => {
-        console.log(response)
         switch (response.body){
           case "OK_LOGGED_IN":
             dom.show("#ok-login")

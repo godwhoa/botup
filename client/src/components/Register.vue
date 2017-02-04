@@ -21,7 +21,7 @@
       </div>
       <div class="column is-3">
         <p class="control has-icon login">
-          <a class="button is-primary is-medium mont" id="register">
+          <a class="button is-primary is-medium mont" id="register" @click="doRegister">
             <span class="icon">
               <i class="fa fa-user-plus"></i>
             </span>
@@ -36,6 +36,7 @@
 
 <script>
 import Responses from './Responses.vue'
+import dom from '../utils/dom.js'
 
 export default {
   name: 'register',
@@ -50,6 +51,38 @@ export default {
   },
   components:{
     'responses':Responses
+  },
+  methods:{
+    doRegister(){
+      const email = document.getElementById("email").value
+      const user = document.getElementById("user").value
+      const password = document.getElementById("pass").value
+
+      this.$http.post('/api/user/register', {'email': email,'user':user,'pass':password}).then(response => {
+        switch (response.body){
+          case "OK_USER_CREATED":
+            dom.show("#ok-created")
+            setTimeout(()=>{
+              this.$router.push("login")
+            },1000)
+            break;
+          case "ERR_USER_TAKEN":
+            dom.show("#user-taken")
+            break;
+          case "ERR_FIELDS_MISSING":
+            dom.show("#invalid-form")
+            break;
+          case "ERR_INTERNAL":
+            dom.show("#inter-err")
+            break;
+          default:
+            dom.show("#inter-err")
+        }
+        setTimeout(()=>{
+          dom.hide(".notification")
+        },2000)
+      },err => {console.log(err)});
+    }
   }
 }
 </script>
