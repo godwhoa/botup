@@ -35,14 +35,16 @@ func (b BotService) AddPlugin(plugin botup.Plugin) error {
 	return nil
 }
 
+var get_bots = "SELECT (NICK,SERVER,CHANNEL) FROM BOTS WHERE UID = $1 AND BID = $2"
+
 var removebot_stmt = "DELETE FROM BOTS WHERE UID = $1 AND BID = $2"
 
-func (b BotService) RemoveBot(bot botup.Bot) error {
+func (b BotService) RemoveBot(UID string, BID int) error {
 	stmt, err := b.DB.Prepare(removebot_stmt)
 	if err != nil {
 		return err
 	}
-	ret, err := stmt.Exec(bot.UID, bot.BID)
+	ret, err := stmt.Exec(UID, BID)
 	affected, _ := ret.RowsAffected()
 	if err != nil || affected < 1 {
 		return botup.BotDoesntExists

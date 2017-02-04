@@ -25,6 +25,8 @@ var PluginDoesntExists = errors.New("Plugin for bot doesn't exists")
 type BotService interface {
 	AddBot(bot Bot) (int, error)
 	AddPlugin(plugin Plugin) error
-	RemoveBot(bot Bot) error
+	// GetBot(UID string, BID int) (Bot, error)
+	// GetBots(UID string) ([]Bot, error)
+	RemoveBot(UID string, BID int) error
 	RemovePlugin(plugin Plugin) error
 }

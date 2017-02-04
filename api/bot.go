@@ -107,7 +107,7 @@ func (b *Bot) RemoveBot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = b.Service.RemoveBot(bot)
+	err = b.Service.RemoveBot(bot.UID, bot.BID)
 	switch err {
 	case botup.BotDoesntExists:
 		w.Write(botup.ERR_BOT_DOESNT_EXISTS)
