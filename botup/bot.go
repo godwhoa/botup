@@ -3,18 +3,18 @@ package botup
 import "errors"
 
 type Bot struct {
-	BID     int
-	UID     string
-	Nick    string
-	Addr    string
-	Channel string
-	Alive   bool
+	BID     int    `json:"bid"`
+	UID     string `json:"-"`
+	Nick    string `json:"nick"`
+	Addr    string `json:"server"`
+	Channel string `json:"channel"`
+	Alive   bool   `json:"alive"`
 }
 
 type Plugin struct {
-	BID    int
-	UID    string
-	Plugin string
+	BID    int    `json:"bid"`
+	UID    string `json:"-"`
+	Plugin string `json:"plugin"`
 }
 
 var BotAlreadyExists = errors.New("Bot for server already exists")
@@ -25,8 +25,10 @@ var PluginDoesntExists = errors.New("Plugin for bot doesn't exists")
 type BotService interface {
 	AddBot(bot Bot) (int, error)
 	AddPlugin(plugin Plugin) error
-	// GetBot(UID string, BID int) (Bot, error)
-	// GetBots(UID string) ([]Bot, error)
+	GetBot(UID string, BID int) (Bot, error)
+	GetBots(UID string) ([]Bot, error)
+	GetAllPlugins(UID string) ([]Plugin, error)
+	GetPlugins(UID string, BID int) ([]string, error)
 	RemoveBot(UID string, BID int) error
 	RemovePlugin(plugin Plugin) error
 }

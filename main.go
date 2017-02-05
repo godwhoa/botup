@@ -52,14 +52,18 @@ func main() {
 	// Bot handlers
 	r.HandleFunc("/api/bot/add",
 		decorators.Auth(bot_api.AddBot, store, login_cache)).Methods("POST")
-	r.HandleFunc("/api/bot/add",
-		decorators.Auth(bot_api.RemoveBot, store, login_cache)).Methods("POST")
+	r.HandleFunc("/api/bot/get/{BID}",
+		decorators.Auth(bot_api.GetBot, store, login_cache)).Methods("GET")
+	r.HandleFunc("/api/bot/getall",
+		decorators.Auth(bot_api.GetBots, store, login_cache)).Methods("GET")
 
 	// Plugin handlers
 	r.HandleFunc("/api/plugin/add",
 		decorators.Auth(bot_api.AddPlugin, store, login_cache)).Methods("POST")
-	r.HandleFunc("/api/plugin/add",
-		decorators.Auth(bot_api.RemovePlugin, store, login_cache)).Methods("POST")
+	r.HandleFunc("/api/plugin/get/{BID}",
+		decorators.Auth(bot_api.GetPlugins, store, login_cache)).Methods("GET")
+	r.HandleFunc("/api/plugin/getall",
+		decorators.Auth(bot_api.GetAllPlugins, store, login_cache)).Methods("GET")
 
 	// Public
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./client/")))

@@ -35,7 +35,76 @@ func (b BotService) AddPlugin(plugin botup.Plugin) error {
 	return nil
 }
 
-var get_bots = "SELECT (NICK,SERVER,CHANNEL) FROM BOTS WHERE UID = $1 AND BID = $2"
+var get_bots_stmt = "SELECT BID,NICK,ALIVE,SERVER,CHANNEL FROM BOTS WHERE UID = $1"
+
+func (b BotService) GetBots(UID string) ([]botup.Bot, error) {
+	bots := []botup.Bot{}
+	rows, err := b.DB.Query(get_bots_stmt, UID)
+	if err == sql.ErrNoRows {
+		return bots, botup.BotDoesntExists
+	}
+
+	for rows.Next() {
+		bot := botup.Bot{}
+		err = rows.Scan(&bot.BID, &bot.Nick, &bot.Alive, &bot.Addr, &bot.Channel)
+		if err != nil {
+			return bots, nil
+		}
+		bots = append(bots, bot)
+	}
+	return bots, nil
+}
+
+var get_bot_stmt = "SELECT BID,NICK,ALIVE,SERVER,CHANNEL FROM BOTS WHERE UID = $1 AND BID = $2"
+
+func (b BotService) GetBot(UID string, BID int) (botup.Bot, error) {
+	bot := botup.Bot{}
+	err := b.DB.QueryRow(get_bot_stmt, UID, BID).Scan(&bot.BID, &bot.Nick, &bot.Alive, &bot.Addr, &bot.Channel)
+	if err == sql.ErrNoRows {
+		return botup.Bot{}, botup.BotDoesntExists
+	}
+	return bot, nil
+}
+
+var get_allplugins_stmt = "SELECT BID,PLUGIN FROM PLUGINS WHERE UID = $1"
+
+func (b BotService) GetAllPlugins(UID string) ([]botup.Plugin, error) {
+	plugins := []botup.Plugin{}
+	rows, err := b.DB.Query(get_allplugins_stmt, UID)
+	if err == sql.ErrNoRows {
+		return plugins, botup.PluginDoesntExists
+	}
+
+	for rows.Next() {
+		plugin := botup.Plugin{}
+		err = rows.Scan(&plugin.BID, &plugin.Plugin)
+		if err != nil {
+			return plugins, nil
+		}
+		plugins = append(plugins, plugin)
+	}
+	return plugins, nil
+}
+
+var get_plugins_stmt = "SELECT PLUGIN FROM PLUGINS WHERE UID = $1 AND BID = $2"
+
+func (b BotService) GetPlugins(UID string, BID int) ([]string, error) {
+	plugins := []string{}
+	rows, err := b.DB.Query(get_plugins_stmt, UID, BID)
+	if err != nil {
+		return plugins, botup.PluginDoesntExists
+	}
+
+	for rows.Next() {
+		var plugin string
+		err = rows.Scan(&plugin)
+		if err != nil {
+			return plugins, nil
+		}
+		plugins = append(plugins, plugin)
+	}
+	return plugins, nil
+}
 
 var removebot_stmt = "DELETE FROM BOTS WHERE UID = $1 AND BID = $2"
 
